@@ -4,7 +4,7 @@
 
 ### Table of Contents 📖
 1. [Standardize Date Format](#1-standardize-date-format-)
-2. [Populate Property Address](#2-populate-property-address)
+2. [Populate Property Address](#2-populate-property-address-)
 3. [Separate Address into Individual Columns]()
 4. [Change Y and N to Yes and No in SoldAsVacant Field]()
 5. [Remove Duplicates]()
