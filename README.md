@@ -1,6 +1,6 @@
 # Nashville-Housing-Data 🏘️
 
-## 💡Cleaning Data set
+## 🧼 Cleaning Data set
 
 ### Table of Contents 📖
 1. [Standardize Date Format](https://github.com/MichaelArellanox/Nashville-Housing-Data#1-standardize-date-format)
