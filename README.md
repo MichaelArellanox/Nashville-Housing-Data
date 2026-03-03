@@ -2,7 +2,7 @@
 
 ## 💡Cleaning Data set
 
-## Table of Contents 📖
+### Table of Contents 📖
 1. [Standardize Date Format](https://github.com/MichaelArellanox/Nashville-Housing-Data#1-standardize-date-format)
 2. [Populate Property Address](https://github.com/MichaelArellanox/Nashville-Housing-Data?tab=readme-ov-file#2-populate-property-address)
 3. [Separate Address into Individual Columns](https://github.com/MichaelArellanox/Nashville-Housing-Data?tab=readme-ov-file#3-separating-addresses-into-individual-columns-address-city-state)
@@ -167,4 +167,224 @@ As you can see when we look at our updated table the two new columns with the da
 
 ### Second Method (`PARSENAME`)
 
+We will take a look at the `OwnerAddress` column now and see what we need to separate.
+
+
+````sql
+SELECT OwnerAddress
+FROM NashvilleHousing;
+````
+
+**Result:**
+
+<img width="469" height="300" alt="image" src="https://github.com/user-attachments/assets/2c1e7cdc-702d-4673-9e25-c4a737647fb2" />
+
+In this field the address, city, and state need to be separated into individual columns and I will use `PARSENAME` to acheive this. Although, this method is only useful when data is separated with periods so I had to work around that.
+
+````sql
+SELECT
+-- onyl useful with periods
+-- parsename does everything backwards so it starts from city state then address so in parsename we will go backwards
+PARSENAME(REPLACE(OwnerAddress, ',', '.'), 3),
+PARSENAME(REPLACE(OwnerAddress, ',', '.'), 2),
+PARSENAME(REPLACE(OwnerAddress, ',', '.'), 1)
+FROM NashvilleHousing;
+````
+
+**Result:**
+
+<img width="602" height="374" alt="image" src="https://github.com/user-attachments/assets/d56a708b-e372-46d4-9074-dad4ea7501aa" />
+
+Using `PARSENAME` I have successfully separated the address, city, and state into individual columns and will now use this to update the tabel.
+
+````sql
+-- update table with new separated data
+ALTER TABLE NashvilleHousing
+ADD OwnerSplitAddress NVARCHAR(255);
+
+UPDATE NashvilleHousing
+SET OwnerSplitAddress = PARSENAME(REPLACE(OwnerAddress, ',', '.'), 3);
+
+ALTER TABLE NashvilleHousing
+ADD OwnerSplitCity NVARCHAR(255);
+
+UPDATE NashvilleHousing
+SET OwnerSplitCity = PARSENAME(REPLACE(OwnerAddress, ',', '.'), 2);
+
+ALTER TABLE NashvilleHousing
+ADD OwnerSplitState NVARCHAR(255);
+
+UPDATE NashvilleHousing
+SET OwnerSplitState = PARSENAME(REPLACE(OwnerAddress, ',', '.'), 1);
+
+-- check if table updated 
+SELECT *
+FROM NashvilleHousing;
+````
+
+**Result:**
+
+<img width="1820" height="345" alt="image" src="https://github.com/user-attachments/assets/1bea4555-1724-4520-9cf5-8eaf7b81a768" />
+
+
+The table has been updated with the new columns shown to the far right.
+
+### 4. Change Y and N to Yes and No in `SoldAsVacant` field
+
+First I want to see how many of each are in this field. By looking through the data there is a mix of Y, N, Yes, and No.
+
+````sql
+-- Checking how many Y's, N's, Yes, and No's there are
+SELECT DISTINCT(SoldAsVacant), COUNT(SoldAsVacant)
+FROM NashvilleHousing
+GROUP BY SoldAsVacant
+ORDER BY 2;
+````
+
+**Result:**
+
+<img width="320" height="131" alt="image" src="https://github.com/user-attachments/assets/33373c07-6b4d-4733-80ea-58e93218a894" />
+
+The 52 Y's and 399 N's will be changed by using case statements.
+
+````sql
+-- Want to change the Y's and N's to Yes and No
+SELECT SoldAsVacant,
+CASE WHEN SoldAsVacant = 'Y' THEN 'Yes'
+     WHEN SoldAsVacant = 'N' THEN 'No'
+     ELSE SoldAsVacant
+     END
+FROM NashvilleHousing;
+````
+
+**Result:**
+
+<img width="331" height="323" alt="image" src="https://github.com/user-attachments/assets/f642de0f-802b-4cfd-9c05-d6b49af41ea7" />
+
+You can see that the query was successful and multiple rows where the data was N is now No. The next step is to just update our table.
+
+
+````sql
+-- Update our table
+UPDATE NashvilleHousing
+SET SoldAsVacant = CASE WHEN SoldAsVacant = 'Y' THEN 'Yes'
+     WHEN SoldAsVacant = 'N' THEN 'No'
+     ELSE SoldAsVacant
+     END
+FROM NashvilleHousing
+````
+If I rerun my previous query then only Yes and No should appear.
+
+**Results:**
+
+<img width="324" height="85" alt="image" src="https://github.com/user-attachments/assets/22c51905-3847-430d-8881-db1c507461e1" />
+
+No Y's or N's show up so our update was successful.
+
+### 5. Remove Duplicates
+
+````sql
+Select *,
+	ROW_NUMBER() OVER (
+	PARTITION BY ParcelID,
+				 PropertyAddress,
+				 SalePrice,
+				 SaleDate,
+				 LegalReference
+				 ORDER BY
+					UniqueID
+					) row_num
+
+From NashvilleHousing;
+````
+
+**Result:**
+
+<img width="1826" height="354" alt="image" src="https://github.com/user-attachments/assets/4fab75d1-4e55-4bd1-a9f6-4cea0e716dff" />
+
+Using `ROW_NUMBER` and `PARTITION BY` we assigned row numbers which can be seen in the new row_num column to the far right. If the row number is greater than 1 then that means it is a duplicate. 
+
+````sql
+WITH Row_NumCTE AS(
+SELECT *,
+	ROW_NUMBER() OVER (
+	PARTITION BY ParcelID,
+				 PropertyAddress,
+				 SalePrice,
+				 SaleDate,
+				 LegalReference
+				 ORDER BY
+					UniqueID
+						) row_num
+
+FROM NashvilleHousing
+)
+
+-- figuring out how many duplicates there are, if a row number is greater than 1 than it is a duplicate
+SELECT *
+FROM Row_NumCTE
+WHERE row_num > 1
+ORDER BY PropertyAddress;
+````
+
+<img width="1855" height="409" alt="image" src="https://github.com/user-attachments/assets/32f7e9fb-247b-46c6-b10f-defc5cf7f95a" />
+
+I created a CTE and selected all the rows that have a row number greated than 1 (duplicates). As we can see on the bottom right corner there are 104 duplicates and my next goal is to delete them.
+
+````sql
+WITH Row_NumCTE AS(
+SELECT *,
+	ROW_NUMBER() OVER (
+	PARTITION BY ParcelID,
+				 PropertyAddress,
+				 SalePrice,
+				 SaleDate,
+				 LegalReference
+				 ORDER BY
+					UniqueID
+						) row_num
+
+FROM NashvilleHousing
+)
+
+-- delete duplicates
+DELETE
+FROM Row_NumCTE 
+WHERE row_num > 1;
+````
+
+**Since I created a CTE I have to execute these two at the same time for it to be successful**
+
+If I rerun the previous `SELECT` statement that collects duplicate rows, no rows should come up now.
+
+**Result:**
+
+<img width="1846" height="284" alt="image" src="https://github.com/user-attachments/assets/6082a9d7-aa20-4374-84ed-cbadc2809279" />
+
+I have deleted the duplicates from the table.
+
+### 6. Delete Unnecessary Columns
+
+````sql
+SELECT *
+FROM NashvilleHousing;
+````
+
+**Result:**
+
+<img width="1816" height="353" alt="image" src="https://github.com/user-attachments/assets/f7eec413-f8cc-4a30-81a7-9a9ef13fba09" />
+
+Looking at my data set and looking back at what I have completed so far, some unnecessary columns that I can delete are `PropertyAddress`, `OwnerAddress`, and `SaleDate` since these are the ones I have updated. I also looked at other columns and thought that `TaxDistrict` was not important so decided mark that as unnecessary.
+
+````sql
+ALTER TABLE NashvilleHousing
+DROP COLUMN OwnerAddress, PropertyAddress, TaxDistrict, SaleDate;
+````
+If we rerun the previous `SELECT` statement then the columns should be gone.
+
+**Completed table after cleaning:**
+
+<img width="1838" height="372" alt="image" src="https://github.com/user-attachments/assets/d03c8488-308d-4ee8-9a76-091c96e060a9" />
+
+<img width="1837" height="352" alt="image" src="https://github.com/user-attachments/assets/9cc61d28-6fb4-440e-a49e-6ca7a427ffc4" />
 
