@@ -5,10 +5,10 @@
 ### Table of Contents 📖
 1. [Standardize Date Format](#1-standardize-date-format-)
 2. [Populate Property Address](#2-populate-property-address-)
-3. [Separate Address into Individual Columns]()
-4. [Change Y and N to Yes and No in SoldAsVacant Field]()
-5. [Remove Duplicates]()
-6. [Delete Unnecessary Columns]()
+3. [Separate Address into Individual Columns](#3-separating-addresses-into-individual-columns-address-city-state-%EF%B8%8F)
+4. [Change Y and N to Yes and No in SoldAsVacant Field](#4-change-y-and-n-to-yes-and-no-in-soldasvacant-field-%EF%B8%8F)
+5. [Remove Duplicates](#5-remove-duplicates-2%EF%B8%8F⃣)
+6. [Delete Unnecessary Columns](#6-delete-unnecessary-columns-%EF%B8%8F)
 
 <br>
    
