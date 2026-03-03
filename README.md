@@ -3,7 +3,7 @@
 ## 🧼 Cleaning Data set
 
 ### Table of Contents 📖
-1. [Standardize Date Format](https://github.com/MichaelArellanox/Nashville-Housing-Data?tab=readme-ov-file#1-standardize-date-format-)
+1. [Standardize Date Format](#1-standardize-date-format-)
 2. [Populate Property Address](https://github.com/MichaelArellanox/Nashville-Housing-Data?tab=readme-ov-file#2-populate-property-address)
 3. [Separate Address into Individual Columns](https://github.com/MichaelArellanox/Nashville-Housing-Data?tab=readme-ov-file#3-separating-addresses-into-individual-columns-address-city-state)
 4. [Change Y and N to Yes and No in SoldAsVacant Field](https://github.com/MichaelArellanox/Nashville-Housing-Data?tab=readme-ov-file#4-change-y-and-n-to-yes-and-no-in-soldasvacant-field)
