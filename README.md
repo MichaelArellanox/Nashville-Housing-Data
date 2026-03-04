@@ -29,7 +29,7 @@ I want to change the `SaleDate` field to only show the date and not the time sta
 
 ````sql
 ALTER TABLE NashvilleHousing
-ADD SaleDateNew Date;<img width="1821" height="276" alt="image" src="https://github.com/user-attachments/assets/adae0628-e1de-4dd8-b503-89520e3560fc" />
+ADD SaleDateNew Date;
 
 UPDATE NashvilleHousing
 SET SaleDateNew = CONVERT(Date, SaleDate);
