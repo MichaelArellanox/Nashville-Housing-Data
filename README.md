@@ -73,7 +73,7 @@ ORDER BY ParcelID;
 
 <img width="1827" height="256" alt="image" src="https://github.com/user-attachments/assets/1b23603a-6be6-44f6-9d3a-69708ed163e6" />
 
-I noticed the `ParcelID` column in row 44 and 45. I saw that `PropertyAddress` is the same for Parcel IDs that are the same. So it is safe to assume if a Parcel ID has a property address and then later on the same Parcel ID has a null value in the property address field, so I can populate it with the address in the first instance.
+I noticed the `ParcelID` column in row 44 and 45. I saw that `PropertyAddress` is the same for Parcel IDs that are the same. So it is safe to assume if a Parcel ID has a property address and then later on the same Parcel ID has a null value in the property address field, I can populate it with the address in the first instance.
 
 <br>
 
